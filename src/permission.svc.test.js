@@ -121,9 +121,9 @@ describe('Service: Permission', function () {
           CustomPermission = _Permission_;
         });
 
-        expect(angular.isFunction(CustomPermission.roleValidations.anonymous)).toBe(true);
-        expect(angular.isFunction(CustomPermission.roleValidations.user)).toBe(true);
-        expect(angular.isFunction(CustomPermission.roleValidations.admin)).toBe(true);
+        expect(angular.isFunction(CustomPermission.roleValidations.anonymous.validator)).toBe(true);
+        expect(angular.isFunction(CustomPermission.roleValidations.user.validator)).toBe(true);
+        expect(angular.isFunction(CustomPermission.roleValidations.admin.validator)).toBe(true);
       });
 
     });
@@ -174,8 +174,8 @@ describe('Service: Permission', function () {
         fakeService.evenAge ? deferred.resolve() : deferred.reject();
         return deferred.promise;
       });
-      expect(angular.isFunction(Permission.roleValidations.noob)).toBe(true);
-      expect(angular.isFunction(Permission.roleValidations.pair)).toBe(true);
+      expect(angular.isFunction(Permission.roleValidations.noob.validator)).toBe(true);
+      expect(angular.isFunction(Permission.roleValidations.pair.validator)).toBe(true);
     });
   });
 
@@ -192,10 +192,10 @@ describe('Service: Permission', function () {
           return deferred.promise;
       });
 
-      expect(angular.isFunction(Permission.roleValidations.admin)).toBe(true);
-      expect(angular.isFunction(Permission.roleValidations.publisher)).toBe(true);
-      expect(angular.isFunction(Permission.roleValidations.user)).toBe(true);
-      expect(angular.isFunction(Permission.roleValidations.anonymous)).toBe(true);
+      expect(angular.isFunction(Permission.roleValidations.admin.validator)).toBe(true);
+      expect(angular.isFunction(Permission.roleValidations.publisher.validator)).toBe(true);
+      expect(angular.isFunction(Permission.roleValidations.user.validator)).toBe(true);
+      expect(angular.isFunction(Permission.roleValidations.anonymous.validator)).toBe(true);
 
     });
 

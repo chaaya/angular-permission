@@ -30,7 +30,10 @@
           Should remove if we cannot find a use for it.
         **/
         validateRoleDefinitionParams(roleName, validationFunction);
-        roleValidationConfig[roleName] = validationFunction;
+        roleValidationConfig[roleName] = {
+          validator: validationFunction,
+          resolved: null
+        };
 
         return this;
       };
@@ -82,11 +85,13 @@
               return deferred.promise;
             }
             // Validate role definition exists
-            if (!angular.isFunction(Permission.roleValidations[currentRole])) {
+            if (!angular.isFunction(Permission.roleValidations[currentRole].validator)) {
               throw new Error('undefined role or invalid role validation');
             }
 
-            var validatingRole = Permission.roleValidations[currentRole](toParams, currentRole);
+            var roleConfig = Permission.roleValidations[currentRole];
+
+            var validatingRole = (roleConfig.resolved != null ? roleConfig.resolved : roleConfig.validator(toParams, currentRole));
             validatingRole = Permission._promiseify(validatingRole);
 
             validatingRole.then(function () {
@@ -107,7 +112,10 @@
               scope where it is defined and therefore can interact with other modules
             **/
             validateRoleDefinitionParams(roleName, validationFunction);
-            roleValidationConfig[roleName] = validationFunction;
+            roleValidationConfig[roleName] = {
+              validator: validationFunction,
+              resolved: null
+            };
 
             return Permission;
           },
