@@ -90,8 +90,7 @@
             }
 
             var roleConfig = Permission.roleValidations[currentRole];
-
-            console.error("role " + currentRole + " rejected: " + roleConfig.rejected);
+            
             if(roleConfig.rejected != null) {
               var cachedRoleValidation = Permission._promiseify(roleConfig.rejected);
               cachedRoleValidation.then(function() {
