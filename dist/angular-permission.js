@@ -1,7 +1,7 @@
 /**
  * angular-permission
  * Route permission and access control as simple as it can get
- * @version v0.3.0 - 2015-07-09
+ * @version v0.3.0 - 2015-07-10
  * @link http://www.rafaelvidaurre.com
  * @author Rafael Vidaurre <narzerus@gmail.com>
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -149,28 +149,36 @@
     return directive;
 
     function link(scope, element, attrs) {
-        var states = $state.get();
-        var uiStateName = attrs.uiSref;
-        var currentState = states.filter(function (route) {
-            return (route.name === uiStateName);
-        });
-        var currentState = currentState[0];
+      var stateConfig = getStateConfiguration(attrs.uiSref);
 
-        if (currentState.data && currentState.data.permissions)
+      if (stateConfig.data && stateConfig.data.permissions)
         {
-            var isOnlyPermission = (currentState.data.permissions.only ? true: false);
-
-            var roles = (isOnlyPermission ? currentState.data.permissions.only : currentState.data.permissions.except);
-            roles = roles.join(",");
+            var roles = getRolesFromStateConfiguration(stateConfig);
 
             var customAttributes = {};
-            customAttributes[(isOnlyPermission ? directives.only : directives.except)] = roles;
+            var rule = (stateConfig.data.permissions.only ? directives.only : directives.except);
+            customAttributes[rule] = roles;
 
-            var ruleDirectiveName = (currentState.data.permissions.only ? directives.only : directives.except);
-            
-            checkPermissions(ruleDirectiveName, element, customAttributes, Permission);
+            checkPermissions(rule, element, customAttributes, Permission);
         }
+    }
 
+    function getStateConfiguration(stateName){
+      var states = $state.get();
+      var stateConfiguration = states.filter(function (route) {
+          return (route.name === stateName);
+      });
+
+      if(stateConfiguration.length == 0) {
+        throw new Error('State is not defined in the router config');
+      }
+
+      return stateConfiguration[0];
+    }
+
+    function getRolesFromStateConfiguration(stateConfig) {
+      var roles = (stateConfig.data.permissions.only ? stateConfig.data.permissions.only : stateConfig.data.permissions.except);
+      return roles.join(",");
     }
   }
 
@@ -326,10 +334,10 @@
             var deferred = $q.defer();
             Permission._findMatchingRole(roles, toParams).then(function () {
               // Found role match
-              deferred.resolve(true);
+              deferred.resolve();
             }, function () {
               // No match
-              deferred.reject(false);
+              deferred.reject();
             });
             return deferred.promise;
           },
@@ -337,10 +345,10 @@
             var deferred = $q.defer();
             Permission._findMatchingRole(roles, toParams).then(function () {
               // Role found
-              deferred.reject(false);
+              deferred.reject();
             }, function () {
               // Role not found
-              deferred.resolve(true);
+              deferred.resolve();
             });
             return deferred.promise;
           },
