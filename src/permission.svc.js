@@ -32,7 +32,7 @@
         validateRoleDefinitionParams(roleName, validationFunction);
         roleValidationConfig[roleName] = {
           validator: validationFunction,
-          resolved: null
+          rejected: null
         };
 
         return this;
@@ -91,18 +91,29 @@
 
             var roleConfig = Permission.roleValidations[currentRole];
 
-            var validatingRole = (roleConfig.resolved != null ? roleConfig.resolved : roleConfig.validator(toParams, currentRole));
-            validatingRole = Permission._promiseify(validatingRole);
-
-            validatingRole.then(function () {
-              deferred.resolve();
-            }, function () {
-              Permission._findMatchingRole(roles, toParams).then(function () {
+            console.error("role " + currentRole + " rejected: " + roleConfig.rejected);
+            if(roleConfig.rejected != null) {
+              var cachedRoleValidation = Permission._promiseify(roleConfig.rejected);
+              cachedRoleValidation.then(function() {
                 deferred.resolve();
-              }, function () {
+              }, function() {
                 deferred.reject();
               });
-            });
+            } else {
+              var validatingRole = Permission._promiseify(roleConfig.validator(toParams, currentRole));
+              validatingRole.then(function () {
+                roleConfig.rejected = false;
+                deferred.resolve();
+              }, function () {
+                Permission._findMatchingRole(roles, toParams).then(function () {
+                  roleConfig.rejected = false;
+                  deferred.resolve();
+                }, function () {
+                  roleConfig.rejected = true;
+                  deferred.reject();
+                });
+              });
+            }
 
             return deferred.promise;
           },
@@ -114,7 +125,7 @@
             validateRoleDefinitionParams(roleName, validationFunction);
             roleValidationConfig[roleName] = {
               validator: validationFunction,
-              resolved: null
+              rejected: null
             };
 
             return Permission;
