@@ -75,6 +75,29 @@ Another thing you can do is set a redirect url to which unauthorized sessions wi
     });
 ```
 
+Setting directives permissions/roles
+-------------------------------
+
+This is how simple is to set which permission can or not read a html element. 
+
+```html
+<div class="container">
+  <div class="jumbotron text-center">
+    <h1>Home</h1>
+    <ul class="list-group">
+      <li class="list-group-item" rp-only="admin">ADMIN</li>
+      <li class="list-group-item" rp-only="moderator">MODERATOR</li>
+      <li class="list-group-item" rp-except="anonymous">EXCEPT_ANONYMOUS</li>
+    </ul>
+  </div>
+</div>
+```
+
+There are three directives available for use:
+
+* rp-only
+* rp-except
+* rp-state
 
 Defining roles
 --------------------------
@@ -140,6 +163,17 @@ For that you can use promises
         });
     });
 ```
+
+You can also define many roles which share the same validator. This is useful when you have some central service which handles the validation.
+
+To define many roles which share one validator callback, use `defineManyRoles(<array>, <validator function>)`
+
+```javascript
+  Permission.defineManyRoles(arrayOfRoleNames, function (stateParams, roleName) {
+    return User.hasRole(roleName);
+  });
+```
+
 As you can see, Permission is useful wether you want a role-based access control or a permission-based one, as
 it allows you to define this behaviour however you want to.
 
@@ -155,7 +189,7 @@ Events
 Caveats
 =======
 Because of a bug in ui-router, when using `$urlStateProvider.otherwise` we get an **infinite digest** loop error.
-A workaround was found by [@shaoibmerchant](https://github.com/shoaibmerchant) and it goes like this:
+A workaround was found by [@shoaibmerchant](https://github.com/shoaibmerchant) and it goes like this:
 
 ```javascript
 // Normal usage (creates INFDG error)
@@ -171,7 +205,7 @@ $urlRouterProvider.otherwise( function($injector) {
 TODOS:
 -----
 Help fill this list with your feature requests
-- More powerful redirection to allow passing state parameters and other useful stuff ui-router provides. Ideas anyone?
+- [Waiting for release on `ui-router`'s end] More powerful redirection to allow passing state parameters and other useful stuff ui-router provides. Ideas anyone?
 - Inheritance (example: 'admin' inherits from 'user')
 - Role validation caching?
 
