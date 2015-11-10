@@ -75,6 +75,29 @@ Another thing you can do is set a redirect url to which unauthorized sessions wi
     });
 ```
 
+Setting directives permissions/roles
+-------------------------------
+
+This is how simple is to set which permission can or not read a html element. 
+
+```html
+<div class="container">
+  <div class="jumbotron text-center">
+    <h1>Home</h1>
+    <ul class="list-group">
+      <li class="list-group-item" rp-only="admin">ADMIN</li>
+      <li class="list-group-item" rp-only="moderator">MODERATOR</li>
+      <li class="list-group-item" rp-except="anonymous">EXCEPT_ANONYMOUS</li>
+    </ul>
+  </div>
+</div>
+```
+
+There are three directives available for use:
+
+* rp-only
+* rp-except
+* rp-state
 
 Defining roles
 --------------------------
