@@ -107,6 +107,9 @@
   function checkPermissions(directiveName, element, attrs, Permission) {
     var roleMap = {};
     var roles = attrs[directiveName].replace(/\[|]|'/gi, '').split(',');
+    for (var i = 0; i < roles.length; i++){
+      roles[i] = roles[i].trim();
+    }
     roleMap[(directiveName === directives.only ? 'only' : 'except')] = roles;
 
     var behavior = (attrs.rpBehavior ? attrs.rpBehavior : 'hide');
